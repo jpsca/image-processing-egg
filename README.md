@@ -1,11 +1,11 @@
 # Proper Image
 
-Provides higher-level image processing helpers that are commonly needed
-when handling image uploads.
+![Tests status](https://github.com/jpsca/proper-image/workflows/Tests/badge.svg)
+
+Provides higher-level image processing helpers that are commonly needed when handling image uploads.
 
 This package process images with the [libvips] library.
-Libvips is a library that can process images [very rapidly][libvips performance]
-(often multiple times faster than ImageMagick).
+Libvips is a library that can process images [very rapidly][libvips performance] (often multiple times faster than ImageMagick).
 
 ## Installation
 
@@ -23,7 +23,7 @@ In a Debian/Ubuntu terminal:
 $ sudo apt install libvips
 ```
 
-2. Install this library with pip, or add it to your requirements/depencies:
+2. Install this library with pip, or add it to your requirements/dependencies:
 
 ```sh
 pip install proper-image
@@ -108,8 +108,7 @@ ImageProcessing().source("source.jpg")
 ImageProcessing().source(Path("source.jpg"))
 ```
 
-When `save()` is called without options, the result of processing is a
-temp file. You can save the processing result to a specific location by passing a `destination`, as a string or a Path, to `save()`.
+When `save()` is called without options, the result of processing is a temp file. You can save the processing result to a specific location by passing a `destination`, as a string or a Path, to `save()`.
 
 ```python
 pipeline = ImageProcessing(source_path)

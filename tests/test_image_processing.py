@@ -125,7 +125,7 @@ def test_convert_sets_format():
     pp._processor.save = MagicMock()
     pp.save("destination")
 
-    kw = pp._processor.save.call_args.kwargs
+    _, kw = pp._processor.save.call_args
     assert "destination.png" == kw["destination"]
 
 
@@ -134,7 +134,7 @@ def test_format_is_jpeg_by_default():
     pp._processor.save = MagicMock()
     pp.save("destination")
 
-    kw = pp._processor.save.call_args.kwargs
+    _, kw = pp._processor.save.call_args
     assert "destination.jpeg" == kw["destination"]
 
 
@@ -143,7 +143,7 @@ def test_source_format_before_default():
     pp._processor.save = MagicMock()
     pp.save("destination")
 
-    kw = pp._processor.save.call_args.kwargs
+    _, kw = pp._processor.save.call_args
     assert "destination.gif" == kw["destination"]
 
 
@@ -152,5 +152,5 @@ def test_destination_format_overwrites_convert():
     pp._processor.save = MagicMock()
     pp.save("destination.jpeg")
 
-    kw = pp._processor.save.call_args.kwargs
+    _, kw = pp._processor.save.call_args
     assert "destination.jpeg" == kw["destination"]

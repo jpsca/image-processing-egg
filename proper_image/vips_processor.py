@@ -325,18 +325,22 @@ class VipsProcessor:
         return image.composite(overlays, blend, **options)
 
     def set(self, image: "Image", *args) -> "Image":
+        image = image.copy()
         image.set(*args)
         return image
 
     def set_type(self, image: "Image", *args) -> "Image":
+        image = image.copy()
         image.set_type(*args)
         return image
 
     def set_value(self, image: "Image", *args) -> "Image":
+        image = image.copy()
         image.set_value(*args)
         return image
 
     def remove(self, image: "Image", *args) -> "Image":
+        image = image.copy()
         image.remove(*args)
         return image
 
