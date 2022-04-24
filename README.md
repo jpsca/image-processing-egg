@@ -1,6 +1,6 @@
-# Proper Image
+# ImageProcessing 🥚
 
-![Tests status](https://github.com/jpsca/proper-image/workflows/Tests/badge.svg)
+![Tests status](https://github.com/jpsca/image-processing/workflows/Tests/badge.svg)
 
 Provides higher-level image processing helpers that are commonly needed when handling image uploads.
 
@@ -26,7 +26,7 @@ $ sudo apt install libvips
 2. Install this library with pip, or add it to your requirements/dependencies:
 
 ```sh
-pip install proper-image
+pip install image-processing-egg
 ```
 
 
@@ -36,7 +36,7 @@ Processing is performed through the **`ImageProcessing`** class that
 uses a chainable API for defining the processing pipeline:
 
 ```python
-from proper_image import ImageProcessing
+from image_processing import ImageProcessing
 
 processed = (
   ImageProcessing(source_path)
@@ -51,7 +51,7 @@ processed #=> /temp/.../20180316-18446-1j247h6.png>
 This allows easy branching when generating multiple derivates:
 
 ```python
-from proper_image import ImageProcessing
+from image_processing import ImageProcessing
 
 pipeline = ImageProcessing(source_path).convert("png")
 
@@ -120,7 +120,7 @@ pipeline.save("/path/to/destination")
 
 ## Credits
 
-This library is a port of the Ruby [ImageProcessing gem][gem] to Python.
+This library is a port of the Ruby [image_processing gem][gem] to Python.
 
 
 ## License

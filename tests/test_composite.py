@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 import pyvips
-from proper_image import ImageProcessing
+from image_processing import ImageProcessing
 
 from .utils import (
     assert_different,

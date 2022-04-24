@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from proper_image import ImageProcessing
+from image_processing import ImageProcessing
 
 
 str_source = "source1.gif"

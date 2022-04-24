@@ -1,7 +1,7 @@
 import pytest
 
-from proper_image import ImageProcessing
-from proper_image.vips_processor import SHARPEN_MASK
+from image_processing import ImageProcessing
+from image_processing.vips_processor import SHARPEN_MASK
 
 from .utils import (
     assert_different,

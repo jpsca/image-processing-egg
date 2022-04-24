@@ -1,17 +1,15 @@
 test:
-	pytest -x proper_image tests
+	pytest -x image_processing tests
 
 lint:
-	flake8 --config=setup.cfg proper_image tests
+	flake8 --config=setup.cfg image_processing tests
 
 coverage:
-	pytest --cov-report html --cov proper_image --cov tests proper_image tests
+	pytest --cov-report html --cov image_processing --cov tests image_processing tests
 
 install:
-	pip install -U pip wheel
 	pip install -e .[dev,test]
 	# pre-commit install
 
 install-tests:
-	pip install -U pip wheel
 	pip install -e .[test]
