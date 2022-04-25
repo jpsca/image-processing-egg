@@ -1,6 +1,6 @@
 # ImageProcessing 🥚
 
-![Tests status](https://github.com/jpsca/image-processing-egg/workflows/Tests/badge.svg)
+[![Tests status](https://github.com/jpsca/image-processing-egg/actions/workflows/tests.yml/badge.svg)](https://github.com/jpsca/image-processing-egg/actions/workflows/tests.yml)
 
 Provides higher-level image processing helpers that are commonly needed when handling image uploads.
 
