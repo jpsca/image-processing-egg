@@ -1,4 +1,5 @@
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock
 
 import pytest
@@ -154,3 +155,11 @@ def test_destination_format_overwrites_convert():
 
     _, kw = pp._processor.save.call_args
     assert "destination.jpeg" == kw["destination"]
+
+
+def test_save_to_custom_temp_folder():
+    with TemporaryDirectory() as temp:
+        pp = ImageProcessing(str_source, temp_folder=temp)
+        pp._processor.save = MagicMock()
+        finalpath = pp.save()
+        assert finalpath.startswith(temp)

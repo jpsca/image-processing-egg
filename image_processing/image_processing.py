@@ -1,27 +1,30 @@
 import tempfile
+import uuid
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .vips_processor import VipsProcessor
 
 if TYPE_CHECKING:
-    from typing import Callable, Union
+    from typing import Callable, Optional, Union
 
 
 DEFAULT_FORMAT = "jpeg"
 
 
 class ImageProcessing:
-    __slots__ = ("_source", "_format", "_loader", "_saver", "_operations", "_processor", "_temp_folder")
-
-    def __init__(self, source: "Union[str, Path]" = "", temp_folder: "Union[str, Path, None]" = None):
+    def __init__(self,
+        source: "Union[str, Path]" = "",
+        *,
+        temp_folder: "Union[str, Path, None]" = None,
+    ):
         self._processor = VipsProcessor()
         self._source: str = str(source)
         self._loader: dict = {}
         self._format: str = ""
         self._saver: dict = {}
         self._operations: "list[tuple[str, tuple, dict]]" = []
-        self._temp_folder = temp_folder
+        self._temp_folder = Path(temp_folder) if temp_folder else None
 
     @property
     def options(self) -> dict:
@@ -78,13 +81,13 @@ class ImageProcessing:
         copy._format = format
         return copy
 
-    def save(self, destination: "Union[str, Path]" = "", save: bool = True) -> str:
+    def save(self, destination: "Union[str, Path, None]" = "", save: bool = True) -> str:
         """Run the defined processing and get the result. Allows specifying
         the source file and destination."""
         if not self._source:
             raise ValueError("You must define a source path using `.source(path)`")
 
-        destination = str(destination)
+        destination = Path(destination) if destination else None
         format = self._get_destination_format(destination)
         final_destination = self._get_destination(destination, format)
 
@@ -108,7 +111,7 @@ class ImageProcessing:
         copy._operations = self._operations[:]
         return copy
 
-    def _get_destination_format(self, destination: str) -> str:
+    def _get_destination_format(self, destination: "Optional[Path]") -> str:
         format = ""
         if destination:
             format = self._get_format(destination)
@@ -116,10 +119,15 @@ class ImageProcessing:
         format = format or self._get_format(self._source)
         return format or DEFAULT_FORMAT
 
-    def _get_destination(self, destination: str, format: str) -> str:
-        destination = destination or tempfile.NamedTemporaryFile(delete=False).name
-        destination = destination.rsplit(".", 1)[0]
-        return f"{destination}.{format}"
+    def _get_destination(self, destination: "Optional[Path]", format: str) -> str:
+        if not destination:
+            if self._temp_folder:
+                destination = self._temp_folder / uuid.uuid4().hex
+            else:
+                dest = tempfile.NamedTemporaryFile(delete=False).name
+                destination = Path(dest)
 
-    def _get_format(self, file_path: str) -> str:
+        return str(destination.with_suffix(f".{format}"))
+
+    def _get_format(self, file_path: "Union[str, Path]") -> str:
         return Path(file_path).suffix.lstrip(".")
