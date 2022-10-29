@@ -1,4 +1,6 @@
+import re
 import tempfile
+import unicodedata
 import uuid
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -13,7 +15,8 @@ DEFAULT_FORMAT = "jpeg"
 
 
 class ImageProcessing:
-    def __init__(self,
+    def __init__(
+        self,
         source: "Union[str, Path]" = "",
         *,
         temp_folder: "Union[str, Path, None]" = None,
@@ -66,7 +69,8 @@ class ImageProcessing:
         return copy
 
     def convert(self, format: str) -> "ImageProcessing":
-        """Specifies the output format.
+        """
+        Specifies the output format.
 
         ```python
         pipeline = ImageProcessing(image)
@@ -82,8 +86,10 @@ class ImageProcessing:
         return copy
 
     def save(self, destination: "Union[str, Path, None]" = "", save: bool = True) -> str:
-        """Run the defined processing and get the result. Allows specifying
-        the source file and destination."""
+        """
+        Run the defined processing and get the result. Allows specifying
+        the source file and destination.
+        """
         if not self._source:
             raise ValueError("You must define a source path using `.source(path)`")
 
@@ -120,14 +126,24 @@ class ImageProcessing:
         return format or DEFAULT_FORMAT
 
     def _get_destination(self, destination: "Optional[Path]", format: str) -> str:
-        if not destination:
-            if self._temp_folder:
-                destination = self._temp_folder / uuid.uuid4().hex
-            else:
-                dest = tempfile.NamedTemporaryFile(delete=False).name
-                destination = Path(dest)
-
+        destination = destination or self._get_temp_destination()
         return str(destination.with_suffix(f".{format}"))
+
+    def _get_temp_destination(self) -> Path:
+        if not self._temp_folder:
+            return Path(tempfile.NamedTemporaryFile(delete=False).name)
+
+        filename = self._slugify(self._source)
+        return self._temp_folder / uuid.uuid4().hex / filename
 
     def _get_format(self, file_path: "Union[str, Path]") -> str:
         return Path(file_path).suffix.lstrip(".")
+
+    def _slugify(self, value):
+        """
+        Converts to lowercase, removes non-word characters (alphanumerics and
+        underscores) and converts internal spaces to hyphens.
+        """
+        value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
+        value = re.sub(r"[^\w\s-]", "", value).strip().lower()
+        return re.sub(r"[-\s]+", "-", value)
