@@ -4,12 +4,14 @@ test:
 lint:
 	flake8 --config=setup.cfg image_processing tests
 
+.PHONY: coverage
 coverage:
-	pytest --cov-report html --cov image_processing --cov tests image_processing tests
+	pytest --cov-config=pyproject.toml --cov-report html --cov image_processing image_processing tests
 
 install:
 	pip install -e .[dev,test]
 	# pre-commit install
 
-install-tests:
-	pip install -e .[test]
+.PHONY: types
+types:
+	pyright image_processing

@@ -218,10 +218,10 @@ class VipsProcessor:
         """
         image = self._thumbnail(image, width, height, **options)
         if alpha and not image.hasalpha():
-            image = image.addalpha()
+            image = image.addalpha()  # type: ignore
         background = background or [0, 0, 0]
         return image.gravity(
-            gravity, width, height, extend=extend, background=background
+            gravity, width, height, extend=extend, background=background  # type: ignore
         )
 
     def rotate(
@@ -251,7 +251,7 @@ class VipsProcessor:
         for more details.
         """
         background = background or [0, 0, 0]
-        return image.similarity(angle=degrees, background=background, **options)
+        return image.similarity(angle=degrees, background=background, **options)  # type: ignore
 
     def composite(
         self,
@@ -311,36 +311,36 @@ class VipsProcessor:
                 for ov in overlays:
                     anti_gravity = multi_replace(gravity, ANTI_GRAVITY)
                     ov = ov.gravity(
-                        anti_gravity, image.width + offset[0], image.height + offset[-1]
+                        anti_gravity, image.width + offset[0], image.height + offset[-1]  # type: ignore
                     )
                     overlays_.append(ov)
                 overlays = overlays_
 
             # create image-sized transparent background and apply specified gravity
             overlays = [
-                ov.gravity(gravity, image.width, image.height) for ov in overlays
+                ov.gravity(gravity, image.width, image.height) for ov in overlays  # type: ignore
             ]
 
         # apply the composition
-        return image.composite(overlays, blend, **options)
+        return image.composite(overlays, blend, **options)  # type: ignore
 
     def set(self, image: "Image", *args) -> "Image":
-        image = image.copy()
+        image = image.copy()  # type: ignore
         image.set(*args)
         return image
 
     def set_type(self, image: "Image", *args) -> "Image":
-        image = image.copy()
+        image = image.copy()  # type: ignore
         image.set_type(*args)
         return image
 
     def set_value(self, image: "Image", *args) -> "Image":
-        image = image.copy()
+        image = image.copy()  # type: ignore
         image.set_value(*args)
         return image
 
     def remove(self, image: "Image", *args) -> "Image":
-        image = image.copy()
+        image = image.copy()  # type: ignore
         image.remove(*args)
         return image
 
@@ -354,8 +354,8 @@ class VipsProcessor:
         """
         image = pyvips.Image.new_from_file(source, **options)
         if autorot:
-            image = image.autorot()
-        return image
+            image = image.autorot()  # type: ignore
+        return image  # type: ignore
 
     def _save_image(
         self,
@@ -380,7 +380,7 @@ class VipsProcessor:
         image: "Image",
         width: int,
         height: int,
-        sharpen: "Optional[Image]" = SHARPEN_MASK,
+        sharpen: "Optional[Image]" = SHARPEN_MASK,  # type: ignore
         **options
     ) -> "Image":
         """Resizes the image according to the specified parameters,
@@ -392,9 +392,9 @@ class VipsProcessor:
         else:  # pragma: no cover
             options["auto_rotate"] = False
 
-        image = image.thumbnail_image(width, height=height, **options)
+        image = image.thumbnail_image(width, height=height, **options)  # type: ignore
         if sharpen:
-            image = image.conv(sharpen, precision=pyvips.Precision.INTEGER)
+            image = image.conv(sharpen, precision=pyvips.Precision.INTEGER)  # type: ignore
         return image
 
     def _default_dimensions(
@@ -409,6 +409,6 @@ class VipsProcessor:
             image = source
         else:
             image = pyvips.Image.new_from_file(source)
-        if not image.hasalpha():
-            image = image.addalpha()
-        return image
+        if not image.hasalpha():  # type: ignore
+            image = image.addalpha()  # type: ignore
+        return image  # type: ignore

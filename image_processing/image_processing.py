@@ -12,15 +12,16 @@ DEFAULT_FORMAT = "jpeg"
 
 
 class ImageProcessing:
-    __slots__ = ("_source", "_format", "_loader", "_saver", "_operations", "_processor")
+    __slots__ = ("_source", "_format", "_loader", "_saver", "_operations", "_processor", "_temp_folder")
 
-    def __init__(self, source: "Union[str, Path]" = ""):
+    def __init__(self, source: "Union[str, Path]" = "", temp_folder: "Union[str, Path, None]" = None):
         self._processor = VipsProcessor()
         self._source: str = str(source)
         self._loader: dict = {}
         self._format: str = ""
         self._saver: dict = {}
         self._operations: "list[tuple[str, tuple, dict]]" = []
+        self._temp_folder = temp_folder
 
     @property
     def options(self) -> dict:
