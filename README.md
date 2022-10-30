@@ -7,23 +7,17 @@ Provides higher-level image processing helpers that are commonly needed when han
 This package process images with the [libvips] library.
 Libvips is a library that can process images [very rapidly][libvips performance] (often multiple times faster than ImageMagick).
 
+
+## Requirements
+
+You need to install first the `libvips` library.
+
+- In a MacOS terminal ([using Homebrew](https://brew.sh/)) run: `brew install vips`
+- In a Debian/Ubuntu terminal run: `sudo apt install libvips-tools`
+
 ## Installation
 
-1. Install libvips:
-
-In a MacOS terminal:
-
-```sh
-$ brew install vips
-```
-
-In a Debian/Ubuntu terminal:
-
-```sh
-$ sudo apt install libvips
-```
-
-2. Install this library with pip, or add it to your requirements/dependencies:
+Install this library with pip, or add it to your requirements/dependencies:
 
 ```sh
 pip install image-processing-egg
@@ -120,7 +114,7 @@ pipeline.save("/path/to/destination")
 
 ## Credits
 
-This library is a port of the Ruby [image_processing gem][gem] to Python.
+This library is a port to Python of the Ruby [image_processing gem][gem].
 
 
 ## License
