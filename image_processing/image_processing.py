@@ -1,26 +1,21 @@
-import re
 import tempfile
-import unicodedata
-import uuid
+from hashlib import md5
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .vips_processor import VipsProcessor
 
 if TYPE_CHECKING:
-    from typing import Callable, Optional, Union
+    from typing import Callable, Union
+
+    TStrorPath = Union[str, Path]
 
 
 DEFAULT_FORMAT = "jpeg"
 
 
 class ImageProcessing:
-    def __init__(
-        self,
-        source: "Union[str, Path]" = "",
-        *,
-        temp_folder: "Union[str, Path, None]" = None,
-    ):
+    def __init__(self, source: "TStrorPath" = "", *, temp_folder: "TStrorPath" = ""):
         self._processor = VipsProcessor()
         self._source: str = str(source)
         self._loader: dict = {}
@@ -50,7 +45,7 @@ class ImageProcessing:
 
         return operation
 
-    def source(self, path: "Union[str, Path]") -> "ImageProcessing":
+    def source(self, path: "TStrorPath") -> "ImageProcessing":
         """ """
         copy = self._copy()
         copy._source = str(path)
@@ -85,7 +80,7 @@ class ImageProcessing:
         copy._format = format
         return copy
 
-    def save(self, destination: "Union[str, Path, None]" = "", save: bool = True) -> str:
+    def save(self, destination: "TStrorPath" = "", save: bool = True) -> str:
         """
         Run the defined processing and get the result. Allows specifying
         the source file and destination.
@@ -93,7 +88,7 @@ class ImageProcessing:
         if not self._source:
             raise ValueError("You must define a source path using `.source(path)`")
 
-        destination = Path(destination) if destination else None
+        destination = Path(destination) if destination else ""
         format = self._get_destination_format(destination)
         final_destination = self._get_destination(destination, format)
 
@@ -117,33 +112,30 @@ class ImageProcessing:
         copy._operations = self._operations[:]
         return copy
 
-    def _get_destination_format(self, destination: "Optional[Path]") -> str:
+    def _get_destination_format(self, destination: "TStrorPath") -> str:
         format = ""
         if destination:
             format = self._get_format(destination)
-        format = format or self._format
-        format = format or self._get_format(self._source)
-        return format or DEFAULT_FORMAT
+        return (
+            format
+            or self._format
+            or self._get_format(self._source)
+            or DEFAULT_FORMAT
+        )
 
-    def _get_destination(self, destination: "Optional[Path]", format: str) -> str:
-        destination = destination or self._get_temp_destination()
+    def _get_destination(self, destination: "TStrorPath", format: str) -> str:
+        destination = Path(destination) if destination else self._get_temp_destination()
         return str(destination.with_suffix(f".{format}"))
 
-    def _get_temp_destination(self) -> Path:
+    def _get_temp_destination(self) -> "Path":
+        filename = self._get_temp_filename()
         if not self._temp_folder:
-            return Path(tempfile.NamedTemporaryFile(delete=False).name)
+            self._temp_folder = Path(tempfile.mkdtemp())
+        return self._temp_folder / filename
 
-        filename = self._slugify(self._source)
-        return self._temp_folder / uuid.uuid4().hex / filename
+    def _get_temp_filename(self) -> str:
+        ops = str(self.options).encode("utf8", errors="ignore")
+        return md5(ops).hexdigest()
 
-    def _get_format(self, file_path: "Union[str, Path]") -> str:
+    def _get_format(self, file_path: "TStrorPath") -> str:
         return Path(file_path).suffix.lstrip(".")
-
-    def _slugify(self, value):
-        """
-        Converts to lowercase, removes non-word characters (alphanumerics and
-        underscores) and converts internal spaces to hyphens.
-        """
-        value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
-        value = re.sub(r"[^\w\s-]", "", value).strip().lower()
-        return re.sub(r"[-\s]+", "-", value)
