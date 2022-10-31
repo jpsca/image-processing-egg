@@ -8,14 +8,14 @@ from .vips_processor import VipsProcessor
 if TYPE_CHECKING:
     from typing import Callable, Union
 
-    TStrorPath = Union[str, Path]
+    TStrOrPath = Union[str, Path]
 
 
 DEFAULT_FORMAT = "jpeg"
 
 
 class ImageProcessing:
-    def __init__(self, source: "TStrorPath" = "", *, temp_folder: "TStrorPath" = ""):
+    def __init__(self, source: "TStrOrPath" = "", *, temp_folder: "TStrOrPath" = ""):
         self._processor = VipsProcessor()
         self._source: str = str(source)
         self._loader: dict = {}
@@ -45,7 +45,7 @@ class ImageProcessing:
 
         return operation
 
-    def source(self, path: "TStrorPath") -> "ImageProcessing":
+    def source(self, path: "TStrOrPath") -> "ImageProcessing":
         """ """
         copy = self._copy()
         copy._source = str(path)
@@ -80,7 +80,7 @@ class ImageProcessing:
         copy._format = format
         return copy
 
-    def save(self, destination: "TStrorPath" = "", save: bool = True) -> str:
+    def save(self, destination: "TStrOrPath" = "", save: bool = True) -> str:
         """
         Run the defined processing and get the result. Allows specifying
         the source file and destination.
@@ -101,6 +101,15 @@ class ImageProcessing:
             save=save,
         )
 
+    def get_temp_filename(self, destination: "TStrOrPath" = "") -> str:
+        """Return a filename that, for the same source path, options,
+        operations (in the same order), etc., will be the same.
+        """
+        ops = str(self.options).encode("utf8", errors="ignore")
+        hash = md5(ops).hexdigest()
+        format = self._get_destination_format(destination)
+        return f"{hash}.{format}"
+
     # Private
 
     def _copy(self) -> "ImageProcessing":
@@ -112,7 +121,7 @@ class ImageProcessing:
         copy._operations = self._operations[:]
         return copy
 
-    def _get_destination_format(self, destination: "TStrorPath") -> str:
+    def _get_destination_format(self, destination: "TStrOrPath") -> str:
         format = ""
         if destination:
             format = self._get_format(destination)
@@ -123,19 +132,18 @@ class ImageProcessing:
             or DEFAULT_FORMAT
         )
 
-    def _get_destination(self, destination: "TStrorPath", format: str) -> str:
-        destination = Path(destination) if destination else self._get_temp_destination()
+    def _get_destination(self, destination: "TStrOrPath", format: str) -> str:
+        if destination:
+            destination = Path(destination)
+        else:
+            destination = self._get_temp_destination()
         return str(destination.with_suffix(f".{format}"))
 
     def _get_temp_destination(self) -> "Path":
-        filename = self._get_temp_filename()
+        filename = self.get_temp_filename()
         if not self._temp_folder:
             self._temp_folder = Path(tempfile.mkdtemp())
         return self._temp_folder / filename
 
-    def _get_temp_filename(self) -> str:
-        ops = str(self.options).encode("utf8", errors="ignore")
-        return md5(ops).hexdigest()
-
-    def _get_format(self, file_path: "TStrorPath") -> str:
+    def _get_format(self, file_path: "TStrOrPath") -> str:
         return Path(file_path).suffix.lstrip(".")
